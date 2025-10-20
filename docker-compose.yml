@@ -1,6 +1,19 @@
 version: "3.8"
 
 services:
+  postgres:
+    image: postgres:15
+    container_name: n8n_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - proxy_network
+
   n8n:
     image: n8nio/n8n:latest
     container_name: n8n
@@ -13,13 +26,15 @@ services:
       - WEBHOOK_TUNNEL_URL=https://saterion.finalnews.qzz.io
       - N8N_PORT=5678
       - NODE_ENV=production
-      # PostgreSQL (optional)
+      # PostgreSQL connection
       - DB_TYPE=postgresdb
-      - DB_POSTGRESDB_HOST=${POSTGRES_HOST}
-      - DB_POSTGRESDB_PORT=${POSTGRES_PORT}
+      - DB_POSTGRESDB_HOST=postgres
+      - DB_POSTGRESDB_PORT=5432
       - DB_POSTGRESDB_DATABASE=${POSTGRES_DB}
       - DB_POSTGRESDB_USER=${POSTGRES_USER}
       - DB_POSTGRESDB_PASSWORD=${POSTGRES_PASSWORD}
+    depends_on:
+      - postgres
     volumes:
       - n8n_data:/home/node/.n8n
     networks:
@@ -47,5 +62,6 @@ networks:
 
 volumes:
   n8n_data:
+  postgres_data:
   caddy_data:
   caddy_config:
