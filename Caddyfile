@@ -1,0 +1,13 @@
+saterion.finalnews.qzz.io {
+    encode gzip
+    reverse_proxy n8n:5678
+    tls {
+        # Automatic Let's Encrypt certificate management
+        issuer acme
+    }
+    log {
+        output stdout
+        format console
+    }
+}
+

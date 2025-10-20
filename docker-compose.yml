@@ -1,0 +1,51 @@
+version: "3.8"
+
+services:
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n
+    restart: always
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=${N8N_USER}
+      - N8N_BASIC_AUTH_PASSWORD=${N8N_PASSWORD}
+      - N8N_HOST=saterion.finalnews.qzz.io
+      - WEBHOOK_TUNNEL_URL=https://saterion.finalnews.qzz.io
+      - N8N_PORT=5678
+      - NODE_ENV=production
+      # PostgreSQL (optional)
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=${POSTGRES_HOST}
+      - DB_POSTGRESDB_PORT=${POSTGRES_PORT}
+      - DB_POSTGRESDB_DATABASE=${POSTGRES_DB}
+      - DB_POSTGRESDB_USER=${POSTGRES_USER}
+      - DB_POSTGRESDB_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - n8n_data:/home/node/.n8n
+    networks:
+      - proxy_network
+
+  caddy:
+    image: caddy:2.8
+    container_name: caddy
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - n8n
+    networks:
+      - proxy_network
+
+networks:
+  proxy_network:
+    driver: bridge
+
+volumes:
+  n8n_data:
+  caddy_data:
+  caddy_config:
