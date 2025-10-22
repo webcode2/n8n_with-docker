@@ -1,13 +1,25 @@
 n8n.finalnews.qzz.io {
-    encode gzip
+    encode gzip zstd
+
+    # Reverse proxy to the n8n service (Docker internal network)
     reverse_proxy n8n:5678
+
+    # Optional: Add basic security headers
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "DENY"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        X-XSS-Protection "1; mode=block"
+    }
+
+    # Enable automatic HTTPS certificate management
     tls {
-        # Automatic Let's Encrypt certificate management
         issuer acme
     }
+
     log {
         output stdout
         format console
     }
 }
-
