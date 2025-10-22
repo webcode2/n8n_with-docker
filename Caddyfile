@@ -1,4 +1,4 @@
-saterion.finalnews.qzz.io {
+n8n.finalnews.qzz.io {
     encode gzip
     reverse_proxy n8n:5678
     tls {
