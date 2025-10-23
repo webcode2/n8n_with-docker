@@ -5,7 +5,8 @@ services:
     image: traefik:v3.1
     restart: always
     command:
-      - "--api.insecure=true"
+      - "--api.dashboard=true"
+      - "--api.debug=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
@@ -42,8 +43,6 @@ services:
     depends_on:
       - db
       - traefik
-    ports:
-      - "127.0.0.1:5678:5678"
     labels:
       - traefik.enable=true
       - traefik.http.routers.n8n.rule=Host(`${SUBDOMAIN}.${DOMAIN_NAME}`)
